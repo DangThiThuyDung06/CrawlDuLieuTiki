@@ -1,0 +1,39 @@
+version: "3.9"
+services:
+  api_data_crawl:
+    build: ./data_crawl
+    ports:
+      - "8000:8000"
+    networks:
+      - my-network
+  api_mysql:
+    build: ./mysql_api
+    ports:
+      - "7100:7100"
+    environment:
+      MYSQL_HOST: mysql_db
+      MYSQL_DATABASE: crawl_tiki_panther
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 123456
+    depends_on:
+      - api_data_crawl
+    networks:
+      - my-network
+  mysql_db:
+    container_name: mysql_service
+    build: ./mysql_db
+    ports:
+      - "6603:3306"
+    environment:
+      MYSQL_HOST: 192.168.80.1
+      MYSQL_ROOT_PASSWORD: 123456
+    networks:
+      - my-network
+  main:
+    build: ./main
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api_data_crawl
+networks:
+  my-network:

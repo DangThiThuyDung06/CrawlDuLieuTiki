@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Tìm kiếm sản phẩm trên TIKI</title>
+    <link href="https://getbootstrap.com/docs/5.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container mt-5 mb-5">
+        <h1 class="text-primary text-center"><b>Tìm kiếm sản phẩm trên TIKI</b></h1>
+        <div class="mt-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <input type="text" id="search" placeholder="Search..." class="form-control" autocomplete="off">
+                        <div><a href="/a"><Button class="padding-button">Lịch sử cào</Button></a></div>
+                        <table class="table table-bordered mt-3">
+                            <thead>
+                                <tr>
+                                    <th>ID sản phẩm</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Giá tiền</th>
+                                    <th>Phân loại</th>
+                                    <th>Liên kết sản phẩm</th>
+                                    <th>Thương hiệu</th>
+                                </tr>
+                            </thead>
+                            <tbody id="results">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script type="text/javascript">
+
+    const searchInput = document.querySelector('#search');
+
+    const results_body = document.querySelector('#results');
+
+    load_data();
+
+    function load_data(query = '') {
+        const request = new XMLHttpRequest();
+
+        request.open('GET', `/search?q=${query}`);
+
+        request.onload = () => {
+
+            const results = JSON.parse(request.responseText);
+
+            let html = '';
+
+            if (results.length > 0) {
+                results.forEach(result => {
+                    html += `
+                <tr>
+                    <td>`+ result.ID_product + `</td>
+                    <td>`+ result.Product_name + `</td>
+                    <td>`+ result.Price + `</td>
+                    <td>`+ result.Classification + `</td>
+                    <td><a href=`+ result.Link + ` target="_blank">` + result.Link + `</a></td>
+                    <td>`+ result.Brand + `</td>
+                </tr>
+                `;
+                });
+            }
+            else {
+                html += `
+            <tr>
+                <td colspan="5" class="text-center">No Data Found</td>
+            </tr>
+            `;
+            }
+
+            results_body.innerHTML = html;
+
+        };
+
+        request.send();
+    }
+
+    searchInput.addEventListener('input', () => {
+
+        const query = searchInput.value;
+
+        load_data(query);
+
+    });
+
+</script>
